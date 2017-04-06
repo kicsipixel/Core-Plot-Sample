@@ -50,12 +50,12 @@ class ViewController: NSViewController {
         // 2 - Create text style
         let textStyle: CPTMutableTextStyle = CPTMutableTextStyle()
         textStyle.color = CPTColor.black()
-        textStyle.fontName = "HelveticaNeue-Light"
+        textStyle.fontName = "HelveticaNeue-Bold"
         textStyle.fontSize = 14.0
         textStyle.textAlignment = .center
         
         // 3 - Set graph title and text style
-        graph.title = "Worldwide smartphone sales in the fourth quarter of 2016."
+        graph.title = "Worldwide smartphone sales 4Q16"
         graph.titleTextStyle = textStyle
         graph.titlePlotAreaFrameAnchor = CPTRectAnchor.top
     }
@@ -91,6 +91,29 @@ class ViewController: NSViewController {
     }
     
     func configureLegend() {
+        // 1 - Get graph instance
+        guard let graph = hostView.hostedGraph else { return }
+        
+        // 2 - Create legend
+        let theLegend = CPTLegend(graph: graph)
+        
+        // 3 - Configure legend
+        theLegend.numberOfColumns = 1
+        theLegend.fill = CPTFill(color: CPTColor.white())
+        let textStyle = CPTMutableTextStyle()
+        textStyle.fontSize = 12
+        theLegend.textStyle = textStyle
+        
+        // 4 - Add legend to graph
+        graph.legend = theLegend
+        if view.bounds.width > view.bounds.height {
+            graph.legendAnchor = .right
+            graph.legendDisplacement = CGPoint(x: -20, y: 0.0)
+            
+        } else {
+            graph.legendAnchor = .bottomRight
+            graph.legendDisplacement = CGPoint(x: -8.0, y: 8.0)
+        }
     }
 
 }
@@ -106,7 +129,7 @@ extension ViewController: CPTPieChartDataSource, CPTPieChartDelegate {
     }
     
     func dataLabel(for plot: CPTPlot, record idx: UInt) -> CPTLayer? {
-        let layer = CPTTextLayer(text: String(format: "\(mobileOS[Int(idx)])\n%.2f", marketShare[Int(idx)]))
+        let layer = CPTTextLayer(text: "\(mobileOS[Int(idx)])\n \(marketShare[Int(idx)]*100)%")
         layer.textStyle = plot.labelTextStyle
         return layer
     }
@@ -121,6 +144,6 @@ extension ViewController: CPTPieChartDataSource, CPTPieChartDelegate {
     }
     
     func legendTitle(for pieChart: CPTPieChart, record idx: UInt) -> String? {
-        return nil
+        return mobileOS[Int(idx)]
     }  
 }
